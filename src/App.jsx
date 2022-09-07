@@ -1,12 +1,33 @@
-import {useState} from "react";
+import {useEffect, useState} from "react";
 
 
 function App() {
     const [show, setShow] = useState('all');
+    const [displayData , setDisplayData] = useState([])
+
+    const [allData , setAllData] = useState([]);
+    const [formData , setFormData] = useState({
+        name: '',
+        status: ''
+    })
 
     const handleClick = (val) =>{
         setShow(val);
+        if (val == 'all'){
+            return setDisplayData(allData)
+        }
+        return setDisplayData(allData.filter(item => item.status.toLowerCase() == val))
     }
+
+    useEffect(()=>{
+        setDisplayData(allData)
+    },[allData])
+
+    const handleSubmit = (event) => {
+        event.preventDefault();
+        setAllData(allData => [...allData, formData])
+    }
+
 
     return (
         <div className="App">
@@ -15,13 +36,19 @@ function App() {
                     <div className="col-6 ">
                         <form className="row gy-2 gx-3 align-items-center mb-4">
                             <div className="col-auto">
-                                <input type="text" className="form-control" placeholder="Jane Doe"/>
+                                <input type="text" className="form-control" placeholder="Jane Doe" onChange={event => setFormData( prevState => ({
+                                    ...prevState,
+                                    name: event.target.value
+                                }))}/>
                             </div>
                             <div className="col-auto">
-                                <input type="text" className="form-control" placeholder="Text Here"/>
+                                <input type="text"  className="form-control" placeholder="Text Here" onChange={event => setFormData( prevState => ({
+                                    ...prevState,
+                                    status: event.target.value
+                                }))}/>
                             </div>
                             <div className="col-auto">
-                                <button type="submit" className="btn btn-primary">Submit</button>
+                                <button type="submit" className="btn btn-primary" onClick={handleSubmit}>Submit</button>
                             </div>
                         </form>
                     </div>
@@ -46,22 +73,13 @@ function App() {
                             </tr>
                             </thead>
                             <tbody>
-                            <tr>
-                                <td>Mark</td>
-                                <td>Pending</td>
-                            </tr>
-                            <tr>
-                                <td>Mark</td>
-                                <td>Pending</td>
-                            </tr>
-                            <tr>
-                                <td>Mark</td>
-                                <td>Completed</td>
-                            </tr>
-                            <tr>
-                                <td>Mark</td>
-                                <td>Completed</td>
-                            </tr>
+
+                            {displayData?.map((item ,index) =>{
+                                return <tr key={index}>
+                                    <td>{item.name}</td>
+                                    <td>{item.status}</td>
+                                </tr>
+                            })}
                             </tbody>
                         </table>
                     </div>
